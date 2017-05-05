@@ -40,10 +40,9 @@ namespace excel2json
                 var rowData = new Dictionary<string, object>();
                 foreach (DataColumn column in sheet.Columns)
                 {
-                    string fieldName = column.ToString();
+                    string fieldName = column.ToString().Trim();
 
                     object value = row[column];
-
 
                     // 去掉数值字段的“.0”
                     if (value.GetType() == typeof(double))
@@ -85,13 +84,13 @@ namespace excel2json
                     if (lowcase)
                         fieldName = fieldName.ToLower();
 
-                    if (value.ToString().ToLower() == "null")
+                    if (value.ToString().Trim().ToLower() == "null")
                     {
                         value = null;
                     }
 
                     if (!string.IsNullOrEmpty(fieldName))
-                        rowData[fieldName] = value;
+                        rowData[fieldName] = value.ToString().Trim();
                 }
 
                 m_data[ID] = rowData;

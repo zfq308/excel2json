@@ -159,7 +159,11 @@ namespace excel2json
             sb.AppendLine("\t}");
             sb.AppendLine();
             sb.AppendLine();
-            sb.AppendLine("\tpublic void GenerateMockData() throws Exception {");
+            sb.AppendLine("\tpublic void GenerateMockDataToKinesis() throws Exception {");
+            sb.AppendLine();
+            sb.AppendLine();
+            sb.AppendLine("\t}");
+            sb.AppendLine("\tpublic void GenerateMockDataToDynamoDB() throws Exception {");
             sb.AppendLine("\t\tint size = TestCaseEntities.size();");
             sb.AppendLine("\t\tif (size > 0) {");
             sb.AppendLine("\t\t\tfor (int i = 0; i < size; i++) {");
