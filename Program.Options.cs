@@ -4,12 +4,12 @@ using CommandLine;
 
 namespace excel2json
 {
-    partial class Program
+    public partial class Program
     {
         /// <summary>
         /// 命令行参数定义
         /// </summary>
-        private sealed class Options
+        public sealed class Options
         {
             [Option('e', "excel", Required = false, HelpText = "输入的Excel文件路径.")]
             public string ExcelPath

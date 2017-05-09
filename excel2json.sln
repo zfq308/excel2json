@@ -1,7 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "excel2json", "excel2json.csproj", "{3F3729F4-9C16-40FB-956D-BE6C18C1A418}"
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.4
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GUI", "GUI\GUI.csproj", "{4E9093D8-DDE2-468F-8152-AB25FBB3CA7A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,10 +11,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{3F3729F4-9C16-40FB-956D-BE6C18C1A418}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3F3729F4-9C16-40FB-956D-BE6C18C1A418}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3F3729F4-9C16-40FB-956D-BE6C18C1A418}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3F3729F4-9C16-40FB-956D-BE6C18C1A418}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E9093D8-DDE2-468F-8152-AB25FBB3CA7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E9093D8-DDE2-468F-8152-AB25FBB3CA7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E9093D8-DDE2-468F-8152-AB25FBB3CA7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E9093D8-DDE2-468F-8152-AB25FBB3CA7A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

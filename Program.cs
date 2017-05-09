@@ -109,61 +109,79 @@ namespace excel2json
                     throw new Exception("Excel文件中没有找到Sheet: " + excelPath);
                 }
 
-                // 取得数据
-                DataTable sheet = book.Tables[0];
-                if (sheet.Rows.Count <= 0)
-                {
-                    throw new Exception("Excel Sheet中没有数据: " + excelPath);
-                }
 
-                //-- 确定编码
-                Encoding cd = new UTF8Encoding(false);
-                if (options.Encoding != "utf8-nobom")
+                if (book.Tables.Count > 0)
                 {
-                    foreach (EncodingInfo ei in Encoding.GetEncodings())
+                    foreach (DataTable sheet in book.Tables)
                     {
-                        Encoding e = ei.GetEncoding();
-                        if (e.EncodingName == options.Encoding)
+                        if (sheet.Rows.Count <= 0)
                         {
-                            cd = e;
-                            break;
+                            throw new Exception("Excel Sheet中没有数据: " + excelPath);
                         }
+
+                        //-- 确定编码
+                        Encoding cd = new UTF8Encoding(false);
+                        if (options.Encoding != "utf8-nobom")
+                        {
+                            foreach (EncodingInfo ei in Encoding.GetEncodings())
+                            {
+                                Encoding e = ei.GetEncoding();
+                                if (e.EncodingName == options.Encoding)
+                                {
+                                    cd = e;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (sheet.TableName == "Config")
+                        {
+
+                        }
+                        else
+                        {
+                            //-- 导出JSON文件
+                            if (options.JsonPath != null && options.JsonPath.Length > 0)
+                            {
+                                JsonExporter exporter = new JsonExporter(sheet, header, options.Lowcase);
+                                exporter.SaveToFile(options.JsonPath, cd);
+                            }
+
+                            //-- 导出SQL文件
+                            if (options.SQLPath != null && options.SQLPath.Length > 0)
+                            {
+                                SQLExporter exporter = new SQLExporter(sheet, header);
+                                exporter.SaveToFile(options.SQLPath, cd);
+                            }
+
+                            //-- 生成C#定义文件
+                            if (options.CSharpPath != null && options.CSharpPath.Length > 0)
+                            {
+                                string excelName = Path.GetFileName(excelPath);
+
+                                CSDefineGenerator exporter = new CSDefineGenerator(sheet);
+                                //exporter.ClassComment = string.Format("// Generate From {0}", excelName);
+                                exporter.SaveToFile(options.CSharpPath, cd);
+                            }
+
+                            //-- 生成Java定义文件
+                            if (options.JavaPath != null && options.JavaPath.Length > 0)
+                            {
+                                string excelName = Path.GetFileName(excelPath);
+
+                                JavaDefineGenerator exporter = new JavaDefineGenerator(sheet);
+                                //exporter.ClassComment = string.Format("// Generate From {0}", excelName);
+                                exporter.SaveToFile(options.JavaPath, cd);
+                            }
+                        }
+
+
                     }
                 }
 
-                //-- 导出JSON文件
-                if (options.JsonPath != null && options.JsonPath.Length > 0)
-                {
-                    JsonExporter exporter = new JsonExporter(sheet, header, options.Lowcase);
-                    exporter.SaveToFile(options.JsonPath, cd);
-                }
 
-                //-- 导出SQL文件
-                if (options.SQLPath != null && options.SQLPath.Length > 0)
-                {
-                    SQLExporter exporter = new SQLExporter(sheet, header);
-                    exporter.SaveToFile(options.SQLPath, cd);
-                }
 
-                //-- 生成C#定义文件
-                if (options.CSharpPath != null && options.CSharpPath.Length > 0)
-                {
-                    string excelName = Path.GetFileName(excelPath);
 
-                    CSDefineGenerator exporter = new CSDefineGenerator(sheet);
-                    //exporter.ClassComment = string.Format("// Generate From {0}", excelName);
-                    exporter.SaveToFile(options.CSharpPath, cd);
-                }
-
-                //-- 生成Java定义文件
-                if (options.JavaPath != null && options.JavaPath.Length > 0)
-                {
-                    string excelName = Path.GetFileName(excelPath);
-
-                    JavaDefineGenerator exporter = new JavaDefineGenerator(sheet);
-                    //exporter.ClassComment = string.Format("// Generate From {0}", excelName);
-                    exporter.SaveToFile(options.JavaPath, cd);
-                }
 
             }
         }
