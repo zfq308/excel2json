@@ -47,7 +47,6 @@ namespace excel2json
                     fieldName = fieldName.Replace("R_", "");
                 }
 
-
                 if (fieldName.StartsWith("QP_"))
                 {
                     fieldName = fieldName.Replace("QP_", "");
@@ -90,7 +89,7 @@ namespace excel2json
         }
 
 
-        public void SaveToFile(string filePath, Encoding encoding)
+        public void SaveToFile(string filePath, Encoding encoding, String NameSpace = "")
         {
             if (m_fieldList == null)
                 throw new Exception("JavaDefineGenerator内部数据为空。");
@@ -100,18 +99,16 @@ namespace excel2json
             //-- 创建代码字符串
             StringBuilder sbForEntity = new StringBuilder();
             StringBuilder sbForEntityToString = new StringBuilder();
-            sbForEntity.AppendLine("package Models;");
+            sbForEntity.AppendLine("package com.morningstar.qa.references.Models" + NameSpace + ";");
             sbForEntity.AppendLine();
-            sbForEntity.AppendLine("import java.util.*;");
+
             sbForEntity.AppendLine();
             sbForEntity.AppendFormat("public class {0}\r\n{{", defName + "Entity");
             sbForEntity.AppendLine();
             foreach (FieldDef field in m_fieldList)
             {
                 sbForEntity.AppendFormat("\tpublic {0} {1}; // {2}", ConvertJavaDataType(field.type), field.name, field.comment);
-
                 sbForEntityToString.AppendLine("\t\tif(" + field.name + " == null){sb.append(\"" + field.name + "=null<br>\");} else {sb.append(\"" + field.name + " = \" + " + field.name + ".toString() + \"<br>\");}");
-
                 //sbForEntityToString.AppendLine("\t\tsb.append(\"" + field.name + "=\" + " + field.name + " == null ? \"null\" : "+ field.name + ".toString() + \"\\n\");");
                 sbForEntity.AppendLine();
             }
@@ -134,100 +131,6 @@ namespace excel2json
                     writer.Write(sbForEntity.ToString());
             }
 
-
-
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("package Models;");
-            sb.AppendLine();
-            sb.AppendLine("import Utils.FileHelper;");
-            sb.AppendLine("import Utils.GsonHelper;");
-            sb.AppendLine();
-            sb.AppendLine("import java.util.*;");
-            sb.AppendLine();
-            if (this.ClassComment != null)
-                sb.AppendLine(this.ClassComment);
-            sb.AppendLine("public class " + defName + " implements IDataPointCalc {");
-            sb.AppendLine();
-            sb.AppendLine("\tprivate String TestCasePath;");
-            sb.AppendLine("\tpublic List<" + defName + "Entity" + "> TestCaseEntities;");
-            sb.AppendLine("\tprivate HashMap map;");
-            sb.AppendLine();
-            sb.AppendLine("\tpublic " + defName + "(String testcasepath) {");
-            sb.AppendLine("\t\tTestCasePath = testcasepath;");
-            sb.AppendLine("\t\tString JsonContent = FileHelper.ReadFileContent(testcasepath);");
-            sb.AppendLine("\t\tTestCaseEntities = GsonHelper.convertEntities(JsonContent, " + defName + "Entity.class);");
-            sb.AppendLine("\t}");
-            sb.AppendLine();
-            sb.AppendLine();
-            sb.AppendLine("\tpublic void GenerateMockDataToKinesis() throws Exception {");
-            sb.AppendLine();
-            sb.AppendLine();
-            sb.AppendLine("\t}");
-            sb.AppendLine("\tpublic void GenerateMockDataToDynamoDB() throws Exception {");
-            sb.AppendLine("\t\tint size = TestCaseEntities.size();");
-            sb.AppendLine("\t\tif (size > 0) {");
-            sb.AppendLine("\t\t\tfor (int i = 0; i < size; i++) {");
-            sb.AppendLine("\t\t\t\t" + defName + "Entity entity = TestCaseEntities.get(i);");
-            sb.AppendLine("\t\t\t\t//TODO: Write Code at here.Save data into DynamoDB or Kinesis");
-            sb.AppendLine();
-            sb.AppendLine();
-            sb.AppendLine("\t\t\t}");
-            sb.AppendLine("\t\t}");
-            sb.AppendLine("\t}");
-            sb.AppendLine();
-            sb.AppendLine();
-            sb.AppendLine("\t public HashMap<Integer, Boolean> ValidateMockData() throws Exception {");
-            sb.AppendLine("\t\tint size = TestCaseEntities.size();");
-            sb.AppendLine("\t\tif (size > 0) {");
-            sb.AppendLine("\t\t\tmap = new HashMap();");
-            sb.AppendLine("\t\t\tfor (int i = 0; i < size; i++) {");
-            sb.AppendLine("\t\t\t\t" + defName + "Entity entity = TestCaseEntities.get(i);");
-            sb.AppendLine("\t\t\t\t//TODO: Write Validate Code at here.");
-            sb.AppendLine("\t\t\t\t// JsonDocument json = ReadDynamoDB(this.getClass().getSimpleName(),entity.ShareClassId, entity.FileDateCalculated);");
-            sb.AppendLine("\t\t\t\t// entity.RealValue= ExtractJson(json, jsonPath);");
-            sb.AppendLine("\t\t\t\t// Boolean ValidateResult = CompareValue( entity.RealValue, entity.EarningYield);");
-            sb.AppendLine("\t\t\t\t");
-            sb.AppendLine("\t\t\t\tBoolean ValidateResult = false;");
-            sb.AppendLine("\t\t\t\tmap.put(entity.No, ValidateResult);");
-            sb.AppendLine("\t\t\t}");
-            sb.AppendLine("\t\t}");
-            sb.AppendLine("\t\treturn map;");
-            sb.AppendLine("\t}");
-            sb.AppendLine();
-            sb.AppendLine();
-            sb.AppendLine("\t@Override");
-            sb.AppendLine("\tpublic String OutputTestResult(HashMap<Integer, Boolean> result)");
-            sb.AppendLine("\t{");
-            sb.AppendLine("\t\tStringBuilder sb = new StringBuilder();");
-            sb.AppendLine("\t\tsb.append(\" <div><table border='1' cellspacing='0' bordercolor='#000000' width = '100%' style='border-collapse:collapse;'><tr><td colspan='3'>\" + this.getClass().getSimpleName() + \"</td></tr>\"); ");
-            sb.AppendLine("\t\tString Format = \" <tr><td>%s</td><td>%s</td><td>%s</td></tr>\";");
-            sb.AppendLine("\t\tList<Integer> list = new ArrayList<>(result.keySet());");
-            sb.AppendLine("\t\tfor (int i = 0; i < list.size(); i++)");
-            sb.AppendLine("\t\t{");
-            sb.AppendLine("\t\t\tint No = list.get(i);");
-            sb.AppendLine("\t\t\tfor (int j = 0; j < result.size(); j++)");
-            sb.AppendLine("\t\t\t{");
-            sb.AppendLine("\t\t\t\t" + defName + "Entity entity = TestCaseEntities.get(j);");
-            sb.AppendLine("\t\t\t\tif (No == entity.No)");
-            sb.AppendLine("\t\t\t\t{");
-            sb.AppendLine("\t\t\t\t\tsb.append(String.format(Format, entity.No, result.get(entity.No), entity.toString()));");
-            sb.AppendLine("\t\t\t\t}");
-            sb.AppendLine("\t\t\t}");
-            sb.AppendLine("\t\t}");
-            sb.AppendLine("\t\tsb.append(\"</table></div>\");");
-            sb.AppendLine("\t\treturn sb.toString();");
-            sb.AppendLine("\t}");
-            sb.AppendLine();
-            sb.AppendLine();
-            sb.AppendLine("}");
-
-
-            //-- 保存文件
-            using (FileStream file = new FileStream(filePath, FileMode.Create, FileAccess.Write))
-            {
-                using (TextWriter writer = new StreamWriter(file, encoding))
-                    writer.Write(sb.ToString());
-            }
         }
     }
 }

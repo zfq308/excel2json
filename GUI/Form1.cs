@@ -49,7 +49,8 @@ namespace excel2json
                 {
                     string excelPath = this.TxtExcel.Text.Trim();
                     String OutputExcelPath = Path.Combine(diTestCaseDataPoint.FullName, "Excel", new FileInfo(excelPath).Name);
-                    File.Copy(excelPath, OutputExcelPath);
+
+                    File.Copy(excelPath, OutputExcelPath, true);
 
                     int header = 3;
                     // 加载Excel文件
@@ -83,37 +84,35 @@ namespace excel2json
                                 if (sheet.TableName.ToLower().Contains("method") || sheet.TableName.ToLower().Contains("change"))
                                 {
                                     JsonPath = Path.Combine(diTestCaseDataPoint.FullName, "MockData", sheet.TableName + "_" + this.TxtDataPoint.Text.Trim() + ".json");
-                                    JsonExporter exporterForJson = new JsonExporter(sheet, header, true);
+                                    JsonExporter exporterForJson = new JsonExporter(sheet, header, false);
                                     exporterForJson.SaveToFile(JsonPath, new UTF8Encoding(false));
 
+                                    String JavaPath = Path.Combine(diEntityDataPoint.FullName, sheet.TableName + ".java");
+                                    JavaDefineGenerator exporterForJava = new JavaDefineGenerator(sheet);
+                                    exporterForJava.SaveToFile(JavaPath, new UTF8Encoding(false), "." + this.TxtCategory.Text.Trim() + "." + this.TxtDataPoint.Text.Trim());
                                 }
                                 else if (sheet.TableName.ToLower().Contains("init"))
                                 {
                                     JsonPath = Path.Combine(diTestCaseDataPoint.FullName, "InitData", sheet.TableName + "_" + this.TxtDataPoint.Text.Trim() + ".json");
-                                    JsonExporter exporterForJson2 = new JsonExporter(sheet, header, true);
+                                    JsonExporter exporterForJson2 = new JsonExporter(sheet, header, false);
                                     exporterForJson2.SaveToFile(JsonPath, new UTF8Encoding(false));
                                 }
                                 else if (sheet.TableName.ToLower().Contains("clean"))
                                 {
                                     JsonPath = Path.Combine(diTestCaseDataPoint.FullName, "CleanData", sheet.TableName + "_" + this.TxtDataPoint.Text.Trim() + ".json");
-                                    JsonExporter exporterForJson = new JsonExporter(sheet, header, true);
+                                    JsonExporter exporterForJson = new JsonExporter(sheet, header, false);
                                     exporterForJson.SaveToFile(JsonPath, new UTF8Encoding(false));
                                 }
                                 else if (sheet.TableName.ToLower().Contains("delta"))
                                 {
                                     JsonPath = Path.Combine(diTestCaseDataPoint.FullName, "DeltaData", sheet.TableName + "_" + this.TxtDataPoint.Text.Trim() + ".json");
-                                    JsonExporter exporterForJson2 = new JsonExporter(sheet, header, true);
+                                    JsonExporter2 exporterForJson2 = new JsonExporter2(sheet, header, false);
                                     exporterForJson2.SaveToFile(JsonPath, new UTF8Encoding(false));
                                 }
-
-                                String JavaPath = Path.Combine(diEntityDataPoint.FullName, sheet.TableName + "_Entity.java");
-                                JavaDefineGenerator exporterForJava = new JavaDefineGenerator(sheet);
-                                exporterForJava.SaveToFile(JavaPath, new UTF8Encoding(false));
-
                             }
                         }
-
                     }
+                    MessageBox.Show("Generate completed.", "Excel2Json", MessageBoxButtons.OK);
                 }
                 catch (Exception exp)
                 {

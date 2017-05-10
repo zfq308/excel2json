@@ -63,6 +63,7 @@
     </Compile>
     <Compile Include="JavaDefineGenerator.cs" />
     <Compile Include="JsonExporter.cs" />
+    <Compile Include="JsonExporter2.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SQLExporter.cs" />

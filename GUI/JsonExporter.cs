@@ -63,8 +63,6 @@ namespace excel2json
                     {
                         fieldName = fieldName.Replace("R_", "");
                     }
-
-
                     if (fieldName.StartsWith("QP_"))
                     {
                         fieldName = fieldName.Replace("QP_", "");
@@ -84,15 +82,19 @@ namespace excel2json
                     if (lowcase)
                         fieldName = fieldName.ToLower();
 
-                    if (value.ToString().Trim().ToLower() == "null")
-                    {
-                        value = null;
-                    }
 
                     if (!string.IsNullOrEmpty(fieldName))
-                        rowData[fieldName] = value.ToString().Trim();
+                    {
+                        if (value.ToString().Trim().ToLower() == "null")
+                        {
+                            rowData[fieldName] = null;
+                        }
+                        else
+                        {
+                            rowData[fieldName] = value.ToString().Trim();
+                        }
+                    }
                 }
-
                 m_data[ID] = rowData;
             }
         }
@@ -117,4 +119,7 @@ namespace excel2json
             }
         }
     }
+
+
+
 }
