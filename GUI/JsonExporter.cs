@@ -91,7 +91,7 @@ namespace excel2json
                         }
                         else
                         {
-                            rowData[fieldName] = value.ToString().Trim();
+                            rowData[fieldName] = value;
                         }
                     }
                 }

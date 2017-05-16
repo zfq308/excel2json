@@ -83,6 +83,8 @@ namespace excel2json
                     return "Date";
                 case "double":
                     return "Double";
+                case "long":
+                    return "Long";
                 default:
                     return type;
             }
