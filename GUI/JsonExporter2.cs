@@ -51,10 +51,23 @@ namespace excel2json
 
                     if (value.ToString() == "JsonObject")
                     {
-                        Dictionary<string, string> matchKV = new Dictionary<string, string>();
+                        Dictionary<string, object> matchKV = new Dictionary<string, object>();
                         for (int k = 0; k < ColumnIdx; k++)
                         {
-                            matchKV.Add(sheet.Columns[k].ColumnName, row[k].ToString());
+                            // 去掉数值字段的“.0”
+                            if (row[k].GetType() == typeof(double))
+                            {
+                                double num = (double)row[k];
+                                if ((int)num == num)
+                                    row[k] = (int)num;
+                            }
+                            if (row[k].GetType() == typeof(DateTime))
+                            {
+                                //TODO: 处理Datetime类型数据
+                                DateTime dt = (DateTime)row[k];
+                                row[k] = dt.ToString("yyyy-MM-dd");
+                            }
+                            matchKV.Add(sheet.Columns[k].ColumnName, row[k]);
                         }
                         obj.rawPrice = matchKV;
                     }
@@ -84,7 +97,7 @@ namespace excel2json
                 throw new Exception("JsonExporter内部数据为空。");
 
             //-- 转换为JSON字符串
-            string json = JsonConvert.SerializeObject(m_data);
+            string json = JsonConvert.SerializeObject(m_data, Formatting.Indented);
             //string json = JsonConvert.SerializeObject(m_data.Values, Formatting.Indented);
 
             //-- 保存文件
