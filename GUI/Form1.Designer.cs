@@ -42,6 +42,7 @@
             this.TxtEntityRootPath = new System.Windows.Forms.TextBox();
             this.TxtRootPath = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
+            this.ChkOutputSQLOnly = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -184,11 +185,22 @@
             this.label6.Text = "Sheet name Keyword:\r\n        Mock data: method or change\r\n\r\n        Init data: in" +
     "it\r\n\r\n        Clean data: clean\r\n\r\n        Delta data: delta";
             // 
+            // ChkOutputSQLOnly
+            // 
+            this.ChkOutputSQLOnly.AutoSize = true;
+            this.ChkOutputSQLOnly.Location = new System.Drawing.Point(13, 313);
+            this.ChkOutputSQLOnly.Name = "ChkOutputSQLOnly";
+            this.ChkOutputSQLOnly.Size = new System.Drawing.Size(119, 17);
+            this.ChkOutputSQLOnly.TabIndex = 6;
+            this.ChkOutputSQLOnly.Text = "ChkOutputSQLOnly";
+            this.ChkOutputSQLOnly.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(878, 359);
+            this.Controls.Add(this.ChkOutputSQLOnly);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.button2);
@@ -222,6 +234,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox TxtEntityRootPath;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.CheckBox ChkOutputSQLOnly;
     }
 }
 
