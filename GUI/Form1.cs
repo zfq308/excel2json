@@ -74,54 +74,34 @@ namespace excel2json
                             }
                             else
                             {
-
-
-
-                                if (this.ChkOutputSQLOnly.Checked)
+                                String JsonPath = "";
+                                if (sheet.TableName.ToLower().Contains("method") || sheet.TableName.ToLower().Contains("change"))
                                 {
-                                    String SQLPath = Path.Combine(diEntityDataPoint.FullName, sheet.TableName + ".sql");
-                                    SQLExporter exporterForSQL = new SQLExporter(sheet, 3);
-                                    exporterForSQL.SaveToFile(SQLPath, new UTF8Encoding(false));
+                                    JsonPath = Path.Combine(diTestCaseDataPoint.FullName, "MockData", sheet.TableName + "_" + this.TxtDataPoint.Text.Trim() + ".json");
+                                    JsonExporter exporterForJson = new JsonExporter(sheet, header, false);
+                                    exporterForJson.SaveToFile(JsonPath, new UTF8Encoding(false));
+
+                                    String JavaPath = Path.Combine(diEntityDataPoint.FullName, sheet.TableName + ".java");
+                                    JavaDefineGenerator exporterForJava = new JavaDefineGenerator(sheet);
+                                    exporterForJava.SaveToFile(JavaPath, new UTF8Encoding(false), "." + this.TxtCategory.Text.Trim() + "." + this.TxtDataPoint.Text.Trim());
                                 }
-                                else
+                                else if (sheet.TableName.ToLower().Contains("init"))
                                 {
-
-
-
-
-
-                                    String JsonPath = "";
-                                    if (sheet.TableName.ToLower().Contains("method") || sheet.TableName.ToLower().Contains("change"))
-                                    {
-                                        JsonPath = Path.Combine(diTestCaseDataPoint.FullName, "MockData", sheet.TableName + "_" + this.TxtDataPoint.Text.Trim() + ".json");
-                                        JsonExporter exporterForJson = new JsonExporter(sheet, header, false);
-                                        exporterForJson.SaveToFile(JsonPath, new UTF8Encoding(false));
-
-                                        String JavaPath = Path.Combine(diEntityDataPoint.FullName, sheet.TableName + ".java");
-                                        JavaDefineGenerator exporterForJava = new JavaDefineGenerator(sheet);
-                                        exporterForJava.SaveToFile(JavaPath, new UTF8Encoding(false), "." + this.TxtCategory.Text.Trim() + "." + this.TxtDataPoint.Text.Trim());
-                                    }
-                                    else if (sheet.TableName.ToLower().Contains("init"))
-                                    {
-                                        JsonPath = Path.Combine(diTestCaseDataPoint.FullName, "InitData", sheet.TableName + "_" + this.TxtDataPoint.Text.Trim() + ".json");
-                                        JsonExporter exporterForJson2 = new JsonExporter(sheet, header, false);
-                                        exporterForJson2.SaveToFile(JsonPath, new UTF8Encoding(false));
-                                    }
-                                    else if (sheet.TableName.ToLower().Contains("clean"))
-                                    {
-                                        JsonPath = Path.Combine(diTestCaseDataPoint.FullName, "CleanData", sheet.TableName + "_" + this.TxtDataPoint.Text.Trim() + ".json");
-                                        JsonExporter exporterForJson = new JsonExporter(sheet, header, false);
-                                        exporterForJson.SaveToFile(JsonPath, new UTF8Encoding(false));
-                                    }
-                                    else if (sheet.TableName.ToLower().Contains("delta"))
-                                    {
-                                        JsonPath = Path.Combine(diTestCaseDataPoint.FullName, "DeltaData", sheet.TableName + "_" + this.TxtDataPoint.Text.Trim() + ".json");
-                                        JsonExporter2 exporterForJson2 = new JsonExporter2(sheet, header, false);
-                                        exporterForJson2.SaveToFile(JsonPath, new UTF8Encoding(false));
-                                    }
-
-
-
+                                    JsonPath = Path.Combine(diTestCaseDataPoint.FullName, "InitData", sheet.TableName + "_" + this.TxtDataPoint.Text.Trim() + ".json");
+                                    JsonExporter exporterForJson2 = new JsonExporter(sheet, header, false);
+                                    exporterForJson2.SaveToFile(JsonPath, new UTF8Encoding(false));
+                                }
+                                else if (sheet.TableName.ToLower().Contains("clean"))
+                                {
+                                    JsonPath = Path.Combine(diTestCaseDataPoint.FullName, "CleanData", sheet.TableName + "_" + this.TxtDataPoint.Text.Trim() + ".json");
+                                    JsonExporter exporterForJson = new JsonExporter(sheet, header, false);
+                                    exporterForJson.SaveToFile(JsonPath, new UTF8Encoding(false));
+                                }
+                                else if (sheet.TableName.ToLower().Contains("delta"))
+                                {
+                                    JsonPath = Path.Combine(diTestCaseDataPoint.FullName, "DeltaData", sheet.TableName + "_" + this.TxtDataPoint.Text.Trim() + ".json");
+                                    JsonExporter2 exporterForJson2 = new JsonExporter2(sheet, header, false);
+                                    exporterForJson2.SaveToFile(JsonPath, new UTF8Encoding(false));
                                 }
 
                             }
@@ -129,8 +109,8 @@ namespace excel2json
                     }
                     MessageBox.Show("Generate completed.", "Excel2Json", MessageBoxButtons.OK);
 
-
-                    catch (Exception exp)
+                }
+                catch (Exception exp)
                 {
                     MessageBox.Show(exp.Message);
                 }
@@ -215,6 +195,38 @@ namespace excel2json
                 diDataPoint = diCategory.CreateSubdirectory(this.TxtDataPoint.Text.Trim());
             }
             return diDataPoint;
+        }
+
+        private void BtnGenerateSQL_Click(object sender, EventArgs e)
+        {
+            string excelPath = this.TxtExcel.Text.Trim();
+            int header = 3;
+            // 加载Excel文件
+            using (FileStream excelFile = File.Open(excelPath, FileMode.Open, FileAccess.Read))
+            {
+                // Reading from a OpenXml Excel file (2007 format; *.xlsx)
+                IExcelDataReader excelReader = ExcelReaderFactory.CreateOpenXmlReader(excelFile);
+
+                // The result of each spreadsheet will be created in the result.Tables
+                excelReader.IsFirstRowAsColumnNames = true;
+                DataSet book = excelReader.AsDataSet();
+
+                // 数据检测
+                if (book.Tables.Count < 1) { throw new Exception("Excel文件中没有找到Sheet: " + excelPath); }
+
+
+                foreach (DataTable sheet in book.Tables)
+                {
+                    if (sheet.Rows.Count <= 0)
+                    {
+                        throw new Exception("Excel Sheet中没有数据: " + excelPath);
+                    }
+                    String SQLPath = Path.Combine(TxtSQLPath.Text.Trim(), sheet.TableName + ".sql");
+                    SQLExporter exporterForSQL = new SQLExporter(sheet, header);
+                    exporterForSQL.SaveToFile(SQLPath, new UTF8Encoding(false), this.ChkGenerateCreateTableScript.Checked);
+                }
+            }
+            MessageBox.Show("Generate completed.", "Excel2Json", MessageBoxButtons.OK);
         }
     }
 }
